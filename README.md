@@ -21,4 +21,4 @@
 - El script devuelve un archivo `result.csv` con la misma estructura mostrando los precios obtenidos por cada item
 ## Iniciar proyecto
 - `python3 index.py 3`
-- El segundo parametro 3, son los segundo para dormir antes de continuar con el proceso (en algunos scaneos es necesario)
+- El segundo parametro `3`, son los segundo para dormir antes de continuar con el proceso (en algunos escaneos es necesario)
