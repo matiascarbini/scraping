@@ -9,8 +9,8 @@ import sys
 def searchPriceLote(driver: webdriver, arrInput: pandas.DataFrame):      
   driver.get("https://www.carrefour.com.ar")
 
-  if(len(sys.argv) > 2):    
-    time.sleep(sys.argv[1])  
+  if(len(sys.argv) == 2):    
+    time.sleep(int(sys.argv[1]))  
 
   arrPrices = []
   for url in arrInput: 
@@ -23,18 +23,23 @@ def searchPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
 
 def getPrice(driver: webdriver, url: string): 
   driver.get(url)
-
-  if(len(sys.argv) > 2):    
-    time.sleep(sys.argv[1])  
+  
+  if(len(sys.argv) == 2):    
+    time.sleep(int(sys.argv[1]))  
   
   html = driver.page_source    
   element = BeautifulSoup(html, 'lxml')
   
   element = element.find('span', 'lyracons-carrefourarg-product-price-1-x-sellingPriceValue') 
-  precio = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger') 
-  decimal = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyFraction')  
-  
-  if precio.text and decimal.text:
-    return precio.text + '.' + decimal.text
-  else:
-    return 0
+
+  if element:
+    precio = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger') 
+    decimal = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyFraction')  
+    
+    if precio.text and decimal.text:
+      return precio.text + '.' + decimal.text
+    else:
+      return 0
+  else: 
+    print('-- Nuevo carrefour --')
+    getPrice(driver, url)
