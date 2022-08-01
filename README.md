@@ -16,4 +16,4 @@
 - `pip install -r requirements.txt`
 
 ## Iniciar proyecto
-- `python3 index.js`
+- `python3 index.py`
