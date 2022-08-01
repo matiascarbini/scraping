@@ -24,4 +24,7 @@ def getPrice(driver: webdriver, url: string):
   precio = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger') 
   decimal = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyFraction')   
   
-  return precio.text + ',' + decimal.text
+  if precio.text and decimal.text:
+    return precio.text + '.' + decimal.text
+  else:
+    return 0

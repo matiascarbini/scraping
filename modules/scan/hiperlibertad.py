@@ -21,4 +21,7 @@ def getPrice(driver: webdriver, url: string):
 
   precio = element.find('p', 'styles__BestPrice-sc-1ovmlws-12') 
   
-  return precio.text.split('$')[1]
+  if precio.text:
+    return precio.text.split('$')[1]
+  else:
+    return 0

@@ -20,9 +20,12 @@ def getPrice(driver: webdriver, url: string):
   element = BeautifulSoup(html, 'lxml')
 
   element = element.find('strong', 'skuBestPrice') 
-     
-  pos = element.text.find('$') + 1
-  count = len(element.text)
-  precio = element.text[pos:count].strip()
   
-  return precio
+  if element.text.find('$') >= 0:
+    pos = element.text.find('$') + 1
+    count = len(element.text)
+    precio = element.text[pos:count].strip()
+    
+    return precio
+  else:
+    return 0
