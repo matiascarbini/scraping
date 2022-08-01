@@ -2,7 +2,6 @@ import modules.driver as chrome
 
 import modules.data.csv as csv
 from os.path import abspath
-import sys
 
 import modules.scan.lagallega as site1
 import modules.scan.lareinaonline as site2
@@ -32,12 +31,8 @@ print("agrego columnas <lagallega>")
 
 result['lareinaonline'] = site2.searchPriceLote(driver, input["lareinaonline"]) 
 print("agrego columnas <lareinaonline>")
-
-sleep = 0
-if(len(sys.argv) > 2):
-  sleep = sys.argv[1]
   
-result['carrefour'] = site3.searchPriceLote(driver, input["carrefour"], sleep) 
+result['carrefour'] = site3.searchPriceLote(driver, input["carrefour"]) 
 print("agrego columnas <carrefour>")
 
 result['unicosupermercados'] = site4.searchPriceLote(driver, input["unicosupermercados"]) 
