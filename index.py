@@ -32,7 +32,7 @@ print("agrego columnas <lagallega>")
 result['lareinaonline'] = site2.searchPriceLote(driver, input["lareinaonline"]) 
 print("agrego columnas <lareinaonline>")
 
-result['carrefour'] = site3.searchPriceLote(driver, input["carrefour"]) #chequear precios
+result['carrefour'] = site3.searchPriceLote(driver, input["carrefour"]) 
 print("agrego columnas <carrefour>")
 
 result['unicosupermercados'] = site4.searchPriceLote(driver, input["unicosupermercados"]) 
