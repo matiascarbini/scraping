@@ -2,4 +2,5 @@ bin
 lib
 pyvenv.cfg
 *.pyc
-*.~lock.input.csv#
+result/input.csv
+result/result.csv
