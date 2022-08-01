@@ -5,22 +5,22 @@ import pandas
 import string
 import time 
 
-def searchPriceLote(driver: webdriver, arrInput: pandas.DataFrame):      
+def searchPriceLote(driver: webdriver, arrInput: pandas.DataFrame, sleep: int):      
   driver.get("https://www.carrefour.com.ar")
-  time.sleep(3)
+  time.sleep(sleep)
 
   arrPrices = []
   for url in arrInput: 
     if url:
-      arrPrices.append(getPrice(driver, url))
+      arrPrices.append(getPrice(driver, url, sleep))
     else:
       arrPrices.append(0)
     
   return arrPrices
 
-def getPrice(driver: webdriver, url: string): 
+def getPrice(driver: webdriver, url: string, sleep: int): 
   driver.get(url)
-  time.sleep(3)
+  time.sleep(sleep)
   
   html = driver.page_source    
   element = BeautifulSoup(html, 'lxml')
