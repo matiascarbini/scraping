@@ -1,5 +1,6 @@
 bin
 lib
+Scripts
 pyvenv.cfg
 *.pyc
 result/input.csv
