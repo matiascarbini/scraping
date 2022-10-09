@@ -3,7 +3,13 @@ from selenium import webdriver
 import pandas
 import string
 
-def searchPriceLote(driver: webdriver, arrInput: pandas.DataFrame):      
+import modules.webdriver.driver as chrome
+
+from flask import Blueprint, request
+
+unicosupermercados_api = Blueprint('unicosupermercados_api', __name__)
+
+def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):      
   driver.get("https://www.unicosupermercados.com.ar")
   
   arrPrices = []
@@ -17,9 +23,13 @@ def searchPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
 
 def getPrice(driver: webdriver, url: string): 
   driver.get(url)
-
   html = driver.page_source  
+  return parse(html)    
+
+def parse(html: string):
   element = BeautifulSoup(html, 'lxml')
+
+  element = element.find('div', 'DetallPrec')
 
   element = element.find('div', 'izq') 
   precio = element.find('b') 
@@ -28,3 +38,18 @@ def getPrice(driver: webdriver, url: string):
     return precio.text.split('$')[1]
   else:
     return 0
+
+@unicosupermercados_api.route('/unicosupermercados/get_price', methods=["GET"])
+def getPriceByURL():
+  url = request.args.get('url')
+  
+  if url is not None:
+    driver = chrome.init()    
+    driver.get("https://www.unicosupermercados.com.ar")
+    driver.get(url)    
+    html = driver.page_source    
+    chrome.quit(driver)
+    
+    return parse(html)    
+  else: 
+    return '-- No se cargo la url << UNICOSSUPERMERCADOS >> --'

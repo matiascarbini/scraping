@@ -3,7 +3,13 @@ from selenium import webdriver
 import pandas
 import string
 
-def searchPriceLote(driver: webdriver, arrInput: pandas.DataFrame):    
+import modules.webdriver.driver as chrome
+
+from flask import Blueprint, request
+
+lareinaonline_api = Blueprint('lareinaonline_api', __name__)
+
+def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):    
   driver.get("https://www.lareinaonline.com.ar")
   
   arrPrices = []
@@ -15,16 +21,34 @@ def searchPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
     
   return arrPrices
 
-def getPrice(driver: webdriver, url: string): 
+def getPrice(driver: webdriver, url: string):    
   driver.get(url)
-  
   html = driver.page_source  
+  return parse(html)  
+  
+def parse(html: string):
   element = BeautifulSoup(html, 'lxml')
 
-  element = element.find('div', 'izq') 
+  element = element.find('div', 'DetallPrec')
+  element = element.find('div', 'der') 
   precio = element.find('b') 
   
   if precio.text:
     return precio.text.split('$')[1]
   else:
     return 0
+
+@lareinaonline_api.route('/lareinaonline/get_price', methods=["GET"])
+def getPriceByURL():
+  url = request.args.get('url')
+  
+  if url is not None:
+    driver = chrome.init()    
+    driver.get("https://www.lareinaonline.com.ar")
+    driver.get(url)    
+    html = driver.page_source    
+    chrome.quit(driver)
+    
+    return parse(html)    
+  else: 
+    return '-- No se cargo la url << LAREINAONLINE >> --'
