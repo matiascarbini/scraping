@@ -205,7 +205,7 @@
         if( confirm("La recopilación de todos los precios puede demorar unos minutos. ¿Desea continuar?") == true) {
           showSpinner()
 
-          url = "http://localhost:5000/all/get_price"+"?top=1"
+          url = "http://localhost:5000/all/get_price" //+"?top=1"
           try {
             let res = await fetch(url);
             console.log(await res.text())     
