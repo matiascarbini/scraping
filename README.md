@@ -18,7 +18,6 @@
 ## Entrada de Datos
 - En la carpeta result, cambiar nombre al archivo `input-example.csv` a `input.csv`
 - Cargar datos segun la estructura del archivo
-- El script devuelve un archivo `result.csv` con la misma estructura mostrando los precios obtenidos por cada item
+- El script devuelve un archivo `output.csv` con la misma estructura mostrando los precios obtenidos por cada item
 ## Iniciar proyecto
-- `python3 index.py 3`
-- El segundo parametro `3`, son los segundo para dormir antes de continuar con el proceso (en algunos escaneos es necesario)
+- `python3 main.py` (La API corre sobre el puerto 5000)

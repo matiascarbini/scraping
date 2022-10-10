@@ -57,7 +57,7 @@ def getPriceByURL():
     
     if pos is not None:            
       output = csv.importCSV(abspath('result/output.csv'))
-      output[int(pos),'cotodigital3'] = val
+      output.at[int(pos),'cotodigital3'] = val
       csv.exportCSV(abspath('result/output.csv'), output)  
 
     return val  

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Precios</title>
+    <title>Recopilador de Precios</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -12,32 +12,50 @@
     <div id="table-link" class="table-responsive-sm"></div>      
  
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
 
-    <script type="text/javascript"charset="utf-8">
-      d3.text("result/input.csv", function(data1) {
+    <script type="text/javascript" charset="utf-8">
+      d3.text("result/input.csv", function(data1) {        
         var dataInput = d3.dsv(';').parseRows(data1);
 
-        d3.text("result/output.csv", function(data2) {
-          var dataOutput = d3.dsv(';').parseRows(data2);
+        d3.text("result/output.csv", function(data2) {  
+          try {
+            var dataOutput = d3.dsv(';').parseRows(data2);
+          } catch (error) {
+            forceGenerateOutput()
+            window.location.reload()
+          }
 
-          var table = "<table class='table table-sm'>"          
-            dataInput.forEach((element, index) => {            
-                        
+          var table = `<table class='table table-sm'>
+            <thead class='thead-dark'>
+              <tr>
+                <th cols="9" class="text-center">
+                  RECOPILADOR DE PRECIOS
+                  <a onclick='getPriceAll()' href="javascript:void(0);" title="Obtener todos los precios">
+                    <i class="fas fa-sync"></i>
+                  </a>                                         
+                </th>
+              </tr>
+            </thead>
+          `
+          dataInput.forEach((element, index) => {                                    
             if(index == 0) {
-              table = table + "<thead class='thead-dark'><tr class='d-flex'>"                          
+              table = table + "<thead class='thead-light'><tr class='d-flex'>"                          
               element.forEach((item, i) => {              
                 if(i == 0) {
                   // no se hace nada
                 }else if(i == 1) {
                   table = table + "<th class='col-4'>" + item.toUpperCase() + "</th>"  
                 } else {
-                  table = table + "<th class='text-center col-1'>" + item.toUpperCase() + "</th>"  
+                  table = table + `<th class='text-center col-1' title="`+item.toUpperCase()+`">` 
+                    + item.toUpperCase().substring(0, 10) + ((item.length > 10) ? "...&nbsp;" : "&nbsp;") +
+                    `<a onclick='getPriceColumn("`+dataOutput[0][i]+`")' href="javascript:void(0);" title="Obtener precio de toda la columna">
+                      <i class="fas fa-sync"></i>
+                    </a>                       
+                  </th>`
                 }
               });                          
               table = table + "</thead></tr><tbody>"
@@ -47,17 +65,17 @@
                 if(i == 0) {
                   // no se hace nada
                 } else if(i == 1) {
-                  table = table + "<td class='text-nowrap col-4' title='"+ element[0] + ' - ' + item +"'>" + element[0] + ' - ' + item + "</td>"  
+                  table = table + "<td class='text-nowrap col-4' title='"+ element[0] + ' - ' + item +"'><b>" + element[0] + '</b> - ' + item + "</td>"  
                 } else {
                   table = table + "<td class='text-center col-1'>"                                    
                   if(dataOutput[index][i] != 'SD') {
                     table = table + `<div class="input-group input-group-sm">
-                                      <input type="number" class="form-control" value='` + dataOutput[index][i] + `'>
+                                      <input readonly="true" type="text" class="form-control" value='` + dataOutput[index][i] + `'>
                                       <div class="input-group-append">
                                         <a class="btn btn-outline-secondary" href="` + item + `" target="_blank" title="Ver Link">
                                           <i class="fas fa-link"></i>
                                         </a>
-                                        <a class="btn btn-outline-primary" href="` + item + `" target="_blank" title="Obtener Precio">
+                                        <a class="btn btn-outline-primary" onclick='getPriceUnique("`+dataOutput[0][i]+`","`+ index +`","`+item+`")' href="javascript:void(0);" title="Obtener precio del item">
                                           <i class="fas fa-sync"></i>
                                         </a>                                                                        
                                       </div>
@@ -75,6 +93,58 @@
 
         });    
       });
+    </script>
+
+    <script type="text/javascript" charset="utf-8">      
+      async function getInit() {
+        url = 'http://localhost:5000'
+        try {
+          let res = await fetch(url);
+          console.log(await res.text())          
+        } catch (error) {
+          console.log(error);
+        }          
+      }
+      async function forceGenerateOutput() {
+        url = 'http://localhost:5000/force_generate_output'
+        try {
+          let res = await fetch(url);
+          console.log(await res.json())          
+        } catch (error) {
+          console.log(error);
+        }          
+      }     
+      
+      async function getPriceUnique(column, index, url) {                
+        url = "http://localhost:5000/"+column+"/get_price?url="+url+"&pos="+(index-1)
+        try {
+          let res = await fetch(url);
+          console.log(await res.text())     
+          window.location.reload()     
+        } catch (error) {
+          console.log(error);
+        } 
+      }      
+      async function getPriceColumn(column) {
+        url = "http://localhost:5000/all/get_price?col="+column //+"&top=5"
+        try {
+          let res = await fetch(url);
+          console.log(await res.text())     
+          window.location.reload()     
+        } catch (error) {
+          console.log(error);
+        } 
+      }
+      async function getPriceAll() {
+        url = "http://localhost:5000/all/get_price"+"?top=1"
+        try {
+          let res = await fetch(url);
+          console.log(await res.text())     
+          window.location.reload()     
+        } catch (error) {
+          console.log(error);
+        }         
+      }
     </script>
   </body>
 </html>

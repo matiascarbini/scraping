@@ -3,3 +3,4 @@ beautifulsoup4
 lxml
 pandas
 flask
+flask-cors

@@ -18,9 +18,6 @@ carrefour_api = Blueprint('carrefour_api', __name__)
 def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):      
   driver.get("https://www.carrefour.com.ar")
 
-  if(len(sys.argv) == 2):    
-    time.sleep(int(sys.argv[1]))  
-
   arrPrices = []
   for url in arrInput: 
     if url:
@@ -32,10 +29,6 @@ def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
 
 def getPrice(driver: webdriver, url: string):   
   driver.get(url)
-  
-  if(len(sys.argv) == 2):    
-    time.sleep(int(sys.argv[1]))  
-  
   html = driver.page_source      
   return parse(html)  
 
@@ -75,7 +68,7 @@ def getPriceByURL():
     
     if pos is not None:            
       output = csv.importCSV(abspath('result/output.csv'))
-      output[int(pos),'carrefour'] = val
+      output.at[int(pos),'carrefour'] = val
       csv.exportCSV(abspath('result/output.csv'), output)  
 
     return val 

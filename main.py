@@ -15,6 +15,7 @@ import os
 import modules.webdriver.driver as chrome
 
 from flask import Flask, request
+from flask_cors import CORS
 
 from modules.scan.arcoirisencasa import arcoirisencasa_api
 from modules.scan.carrefour import carrefour_api
@@ -26,6 +27,7 @@ from modules.scan.lareinaonline import lareinaonline_api
 from modules.scan.unicosupermercados import unicosupermercados_api
 
 app = Flask(__name__)
+CORS(app)
 
 app.register_blueprint(arcoirisencasa_api)
 app.register_blueprint(carrefour_api)

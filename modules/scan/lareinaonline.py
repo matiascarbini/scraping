@@ -33,7 +33,7 @@ def parse(html: string):
   element = BeautifulSoup(html, 'lxml')
 
   element = element.find('div', 'DetallPrec')
-  element = element.find('div', 'der') 
+  element = element.find('div', 'izq') 
   precio = element.find('b') 
   
   if precio.text:
@@ -57,7 +57,7 @@ def getPriceByURL():
     
     if pos is not None:            
       output = csv.importCSV(abspath('result/output.csv'))
-      output[int(pos),'lareinaonline'] = val
+      output.at[int(pos),'lareinaonline'] = val
       csv.exportCSV(abspath('result/output.csv'), output)  
 
     return val    
