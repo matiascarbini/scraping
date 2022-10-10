@@ -141,7 +141,9 @@ def upload():
   uploaded_file = request.files['file']
   if uploaded_file.filename != '':
     uploaded_file.filename = 'input.csv'
-    uploaded_file.save('result/' + uploaded_file.filename,)  
+    uploaded_file.save('result/' + uploaded_file.filename)  
+  
+  forceGenerateOutput()
   
   return redirect("http://localhost:500", code=302)
 
