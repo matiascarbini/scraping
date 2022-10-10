@@ -14,7 +14,7 @@ import os
 
 import modules.webdriver.driver as chrome
 
-from flask import Flask, request
+from flask import Flask, request, send_file
 from flask_cors import CORS
 
 from modules.scan.arcoirisencasa import arcoirisencasa_api
@@ -132,6 +132,11 @@ def forceGenerateOutput():
   output = createOutput(input)      
 
   return output.to_json()
+
+@app.route('/download_output', methods=["GET"])
+def downloadOutput():  
+  path = "result/output.csv"
+  return send_file(path, as_attachment=True)
 
 @app.route('/all/get_price', methods=["GET"])
 def getPrice():    

@@ -5,10 +5,46 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+      #spinner:not([hidden]) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        background: #0000003b;
+      }
+
+      #spinner::after {
+        content: "";
+        width: 150px;
+        height: 150px;
+        border: 9px solid #f3f3f3;
+        border-top: 10px solid #f25a41;
+        border-radius: 100%;
+        will-change: transform;
+        animation: spin 1s infinite linear
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
   </head>
   
   <body>    
-    
+    <div hidden id="spinner"></div>
+
     <div id="table-link" class="table-responsive-sm"></div>      
  
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -25,18 +61,25 @@
           try {
             var dataOutput = d3.dsv(';').parseRows(data2);
           } catch (error) {
-            forceGenerateOutput()
-            window.location.reload()
+            forceGenerateOutput()            
           }
 
           var table = `<table class='table table-sm'>
             <thead class='thead-dark'>
               <tr>
                 <th cols="9" class="text-center">
+                  <a onclick='resetPrice()' href="javascript:void(0);" title="Reinicar Precios" class="badge badge-danger" style="left: 10px; position: absolute; top: 10px;">
+                    <i class="fas fa-trash-restore"></i>
+                  </a>
+
                   RECOPILADOR DE PRECIOS
                   <a onclick='getPriceAll()' href="javascript:void(0);" title="Obtener todos los precios">
                     <i class="fas fa-sync"></i>
                   </a>                                         
+
+                  <a onclick='downloadPrice()' href="javascript:void(0);" title="Descargar Precios" class="badge badge-success" style="right: 10px; position: absolute; top: 10px;">
+                    <i class="fas fa-download"></i>
+                  </a>
                 </th>
               </tr>
             </thead>
@@ -97,53 +140,124 @@
 
     <script type="text/javascript" charset="utf-8">      
       async function getInit() {
+        showSpinner()
+
         url = 'http://localhost:5000'
         try {
           let res = await fetch(url);
           console.log(await res.text())          
+
+          hideSpinner()
         } catch (error) {
+          hideSpinner()
           console.log(error);
         }          
       }
       async function forceGenerateOutput() {
+        showSpinner()
+
         url = 'http://localhost:5000/force_generate_output'
         try {
           let res = await fetch(url);
           console.log(await res.json())          
+
+          hideSpinner()
+          window.location.reload()
         } catch (error) {
+          hideSpinner()
           console.log(error);
         }          
       }     
       
-      async function getPriceUnique(column, index, url) {                
+      async function getPriceUnique(column, index, url) {         
+        showSpinner()
+
         url = "http://localhost:5000/"+column+"/get_price?url="+url+"&pos="+(index-1)
         try {
           let res = await fetch(url);
           console.log(await res.text())     
+
+          hideSpinner()
           window.location.reload()     
         } catch (error) {
+          hideSpinner()
           console.log(error);
         } 
       }      
       async function getPriceColumn(column) {
-        url = "http://localhost:5000/all/get_price?col="+column //+"&top=5"
-        try {
-          let res = await fetch(url);
-          console.log(await res.text())     
-          window.location.reload()     
-        } catch (error) {
-          console.log(error);
-        } 
+        if( confirm("La recopilación de los precios por columna puede demorar unos minutos. ¿Desea continuar?") == true) {
+          showSpinner()
+
+          url = "http://localhost:5000/all/get_price?col="+column //+"&top=5"
+          try {
+            let res = await fetch(url);
+            console.log(await res.text())     
+
+            hideSpinner()
+            window.location.reload()     
+          } catch (error) {
+            hideSpinner()
+            console.log(error);
+          } 
+        }
       }
       async function getPriceAll() {
-        url = "http://localhost:5000/all/get_price"+"?top=1"
+        if( confirm("La recopilación de todos los precios puede demorar unos minutos. ¿Desea continuar?") == true) {
+          showSpinner()
+
+          url = "http://localhost:5000/all/get_price"+"?top=1"
+          try {
+            let res = await fetch(url);
+            console.log(await res.text())     
+            
+            hideSpinner()          
+            window.location.reload()     
+          } catch (error) {
+            hideSpinner()
+            console.log(error);
+          }         
+        }
+      }
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+      function resetPrice() {
+        if( confirm("Reiniciar planilla de precios") == true) {
+          forceGenerateOutput()
+        }
+      }
+      async function downloadPrice() {
+        showSpinner()
+
+        url = 'http://localhost:5000/download_output'
         try {
           let res = await fetch(url);
-          console.log(await res.text())     
-          window.location.reload()     
+          blob = await res.blob()          
+
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a')
+          a.href = url
+          a.download = "output.csv"
+          document.body.appendChild(a)
+          a.click()
+          a.remove()
+
+          hideSpinner()
         } catch (error) {
+          hideSpinner()
           console.log(error);
-        }         
+        }    
+      }
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+      const spinner = document.getElementById("spinner");
+
+      function showSpinner() {
+        spinner.removeAttribute('hidden');
+      }
+      function hideSpinner() {
+        spinner.setAttribute('hidden', '');
       }
     </script>
   </body>
