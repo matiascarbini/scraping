@@ -20,49 +20,60 @@
     <script src="http://d3js.org/d3.v3.min.js"></script>
 
     <script type="text/javascript"charset="utf-8">
-      d3.text("result/input.csv", function(data) {
-        var parsedCSV = d3.csv.parseRows(data);
+      d3.text("result/input.csv", function(data1) {
+        var dataInput = d3.dsv(';').parseRows(data1);
 
-        var table = "<table class='table table-sm'>"          
-        parsedCSV.forEach((element, index) => {                
-          if(index == 0) {
-            table = table + "<thead class='thead-dark'><tr>"                          
-            element.forEach((item, i) => {              
-              if(i == 0) {
-                table = table + "<th>" + item.toUpperCase() + "</th>"  
-              } else {
-                table = table + "<th class='text-center'>" + item.toUpperCase() + "</th>"  
-              }
-            });                          
-            table = table + "</thead></tr><tbody>"
-          } else {
-            table = table + "<tr>"
-            element.forEach((item, i) => {
-              if(i == 0) {
-                table = table + "<td>" + item + "</td>"  
-              } else {
+        d3.text("result/output.csv", function(data2) {
+          var dataOutput = d3.dsv(';').parseRows(data2);
 
-              table = table + "<td class='text-center'>"
-              table = table + `<div class="input-group input-group-sm">
-                                  <input type="number" class="form-control">
-                                  <div class="input-group-append">
-                                    <a class="btn btn-outline-secondary" href="` + item + `" target="_blank" title="Ver Link">
-                                      <i class="fas fa-link"></i>
-                                    </a>
-                                    <a class="btn btn-outline-primary" href="` + item + `" target="_blank" title="Obtener Precio">
-                                      <i class="fas fa-sync"></i>
-                                    </a>                                                                        
-                                  </div>
-                                </div>`
-              table = table + "</td>"  
-              }              
-            });                       
-            table = table + "</tr>"     
-          }
-        });          
-        table = table + "</tbody></table>"
+          var table = "<table class='table table-sm'>"          
+            dataInput.forEach((element, index) => {            
+                        
+            if(index == 0) {
+              table = table + "<thead class='thead-dark'><tr class='d-flex'>"                          
+              element.forEach((item, i) => {              
+                if(i == 0) {
+                  // no se hace nada
+                }else if(i == 1) {
+                  table = table + "<th class='col-4'>" + item.toUpperCase() + "</th>"  
+                } else {
+                  table = table + "<th class='text-center col-1'>" + item.toUpperCase() + "</th>"  
+                }
+              });                          
+              table = table + "</thead></tr><tbody>"
+            } else {
+              table = table + "<tr class='d-flex'>"
+              element.forEach((item, i) => {
+                if(i == 0) {
+                  // no se hace nada
+                } else if(i == 1) {
+                  table = table + "<td class='text-nowrap col-4' title='"+ element[0] + ' - ' + item +"'>" + element[0] + ' - ' + item + "</td>"  
+                } else {
+                  table = table + "<td class='text-center col-1'>"                                    
+                  if(dataOutput[index][i] != 'SD') {
+                    table = table + `<div class="input-group input-group-sm">
+                                      <input type="number" class="form-control" value='` + dataOutput[index][i] + `'>
+                                      <div class="input-group-append">
+                                        <a class="btn btn-outline-secondary" href="` + item + `" target="_blank" title="Ver Link">
+                                          <i class="fas fa-link"></i>
+                                        </a>
+                                        <a class="btn btn-outline-primary" href="` + item + `" target="_blank" title="Obtener Precio">
+                                          <i class="fas fa-sync"></i>
+                                        </a>                                                                        
+                                      </div>
+                                    </div>`
+                  }                
+                  table = table + "</td>"  
+                }              
+              });                       
+              table = table + "</tr>"     
+            }
+          });          
+          table = table + "</tbody></table>"
 
-        document.getElementById("table-link").innerHTML = table
+          document.getElementById("table-link").innerHTML = table
+
+        });    
       });
     </script>
   </body>
