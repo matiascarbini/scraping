@@ -23,7 +23,7 @@ def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
     if url:
       arrPrices.append(getPrice(driver, url))
     else:
-      arrPrices.append(0)
+      arrPrices.append('SD')
     
   return arrPrices
 
@@ -33,24 +33,27 @@ def getPrice(driver: webdriver, url: string):
   return parse(html)  
 
 def parse(html: string):
-  element = BeautifulSoup(html, 'lxml')  
-  element = element.find('span', 'lyracons-carrefourarg-product-price-1-x-sellingPriceValue') 
-  
-  if element:
-    arrPrecio = element.find_all('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger')                         
+  try:
+    element = BeautifulSoup(html, 'lxml')  
+    element = element.find('span', 'lyracons-carrefourarg-product-price-1-x-sellingPriceValue') 
     
-    precio = ""
-    for p in arrPrecio: 
-      precio = str(precio) + str(p.text)
+    if element:
+      arrPrecio = element.find_all('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger')                         
       
-    decimal = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyFraction')  
-            
-    if precio and decimal.text:
-      return precio + '.' + decimal.text
+      precio = ""
+      for p in arrPrecio: 
+        precio = str(precio) + str(p.text)
+        
+      decimal = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyFraction')  
+              
+      if precio and decimal.text:
+        return precio + '.' + decimal.text
+      else:
+        return 'ERR'
     else:
-      return 0
-  else:
-    return 0
+      return 'ERR'
+  except:
+    return 'ERR'
           
 @carrefour_api.route('/carrefour/get_price', methods=["GET"])
 def getPriceByURL():   

@@ -20,7 +20,7 @@ def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
     if url:
       arrPrices.append(getPrice(driver, url))
     else:
-      arrPrices.append(0)
+      arrPrices.append('SD')
     
   return arrPrices
 
@@ -30,17 +30,20 @@ def getPrice(driver: webdriver, url: string):
   return parse(html)    
 
 def parse(html: string):
-  element = BeautifulSoup(html, 'lxml')
+  try:
+    element = BeautifulSoup(html, 'lxml')
 
-  element = element.find('div', 'DetallPrec')
+    element = element.find('div', 'DetallPrec')
 
-  element = element.find('div', 'izq') 
-  precio = element.find('b') 
-  
-  if precio.text:
-    return precio.text.split('$')[1]
-  else:
-    return 0
+    element = element.find('div', 'izq') 
+    precio = element.find('b') 
+    
+    if precio.text:
+      return precio.text.split('$')[1]
+    else:
+      return 'ERR'
+  except:
+    return 'ERR'
 
 @unicosupermercados_api.route('/unicosupermercados/get_price', methods=["GET"])
 def getPriceByURL():

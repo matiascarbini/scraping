@@ -18,7 +18,7 @@ def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
     if url:
       arrPrices.append(getPrice(driver, url))
     else:
-      arrPrices.append(0)
+      arrPrices.append('SD')
     
   return arrPrices
 
@@ -28,14 +28,17 @@ def getPrice(driver: webdriver, url: string):
   return parse(html)  
   
 def parse(html: string):
-  element = BeautifulSoup(html, 'lxml')
+  try:
+    element = BeautifulSoup(html, 'lxml')
+      
+    precio = element.find('p', 'styles__BestPrice-sc-1ovmlws-12') 
     
-  precio = element.find('p', 'styles__BestPrice-sc-1ovmlws-12') 
-  
-  if precio.text:
-    return precio.text.split('$')[1]
-  else:
-    return 0
+    if precio.text:
+      return precio.text.split('$')[1]
+    else:
+      return 'ERR'
+  except:
+    return 'ERR'
   
 @hiperlibertad_api.route('/hiperlibertad/get_price', methods=["GET"])
 def getPriceByURL():       

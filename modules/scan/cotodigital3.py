@@ -18,7 +18,7 @@ def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
     if url:
       arrPrices.append(getPrice(driver, url))
     else:
-      arrPrices.append(0)
+      arrPrices.append('SD')
     
   return arrPrices
 
@@ -28,18 +28,21 @@ def getPrice(driver: webdriver, url: string):
   return parse(html)  
   
 def parse(html: string):
-  element = BeautifulSoup(html, 'lxml')
+  try:
+    element = BeautifulSoup(html, 'lxml')
+      
+    element = element.find('span', 'atg_store_newPrice') 
     
-  element = element.find('span', 'atg_store_newPrice') 
-  
-  if element.text.find('$') >= 0:
-    pos = element.text.find('$') + 1
-    count = len(element.text)
-    precio = element.text[pos:count].strip()
-    
-    return precio
-  else:
-    return 0
+    if element.text.find('$') >= 0:
+      pos = element.text.find('$') + 1
+      count = len(element.text)
+      precio = element.text[pos:count].strip()
+      
+      return precio
+    else:
+      return 'ERR'
+  except:
+    return 'ERR'
   
 @cotodigital3_api.route('/cotodigital3/get_price', methods=["GET"])
 def getPriceByURL():       
