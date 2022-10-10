@@ -45,98 +45,36 @@
   <body>    
     <div hidden id="spinner"></div>
 
-    <div id="table-link" class="table-responsive-sm"></div>      
+    <div id="table-link" class="table-responsive-sm"></div>       
  
+    <!-- Modal -->
+    <div class="modal fade" id="priceModal" tabindex="-1" role="dialog" aria-labelledby="priceModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="priceModallLabel">Cargar Links Precios</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>          
+          <div class="modal-body">                          
+            <form id="load-csv" action="http://localhost:5000/upload" method="POST" enctype="multipart/form-data">
+              <input type="file" name="file" accept=".csv"/>                            
+            </form>
+          </div>
+          <div class="modal-footer">
+            <a href="javascript:void(0);" class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
+            <button onclick="document.getElementById('load-csv').submit();" class="btn btn-primary">Cargar</button>
+          </div>          
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
-
-    <script type="text/javascript" charset="utf-8">
-      d3.text("result/input.csv", function(data1) {        
-        var dataInput = d3.dsv(';').parseRows(data1);
-
-        d3.text("result/output.csv", function(data2) {  
-          try {
-            var dataOutput = d3.dsv(';').parseRows(data2);
-          } catch (error) {
-            forceGenerateOutput()            
-          }
-
-          var table = `<table class='table table-sm'>
-            <thead class='thead-dark'>
-              <tr>
-                <th cols="9" class="text-center">
-                  <a onclick='resetPrice()' href="javascript:void(0);" title="Reinicar Precios" class="badge badge-danger" style="left: 10px; position: absolute; top: 10px;">
-                    <i class="fas fa-trash-restore"></i>
-                  </a>
-
-                  RECOPILADOR DE PRECIOS
-                  <a onclick='getPriceAll()' href="javascript:void(0);" title="Obtener todos los precios">
-                    <i class="fas fa-sync"></i>
-                  </a>                                         
-
-                  <a onclick='downloadPrice()' href="javascript:void(0);" title="Descargar Precios" class="badge badge-success" style="right: 10px; position: absolute; top: 10px;">
-                    <i class="fas fa-download"></i>
-                  </a>
-                </th>
-              </tr>
-            </thead>
-          `
-          dataInput.forEach((element, index) => {                                    
-            if(index == 0) {
-              table = table + "<thead class='thead-light'><tr class='d-flex'>"                          
-              element.forEach((item, i) => {              
-                if(i == 0) {
-                  // no se hace nada
-                }else if(i == 1) {
-                  table = table + "<th class='col-4'>" + item.toUpperCase() + "</th>"  
-                } else {
-                  table = table + `<th class='text-center col-1' title="`+item.toUpperCase()+`">` 
-                    + item.toUpperCase().substring(0, 10) + ((item.length > 10) ? "...&nbsp;" : "&nbsp;") +
-                    `<a onclick='getPriceColumn("`+dataOutput[0][i]+`")' href="javascript:void(0);" title="Obtener precio de toda la columna">
-                      <i class="fas fa-sync"></i>
-                    </a>                       
-                  </th>`
-                }
-              });                          
-              table = table + "</thead></tr><tbody>"
-            } else {
-              table = table + "<tr class='d-flex'>"
-              element.forEach((item, i) => {
-                if(i == 0) {
-                  // no se hace nada
-                } else if(i == 1) {
-                  table = table + "<td class='text-nowrap col-4' title='"+ element[0] + ' - ' + item +"'><b>" + element[0] + '</b> - ' + item + "</td>"  
-                } else {
-                  table = table + "<td class='text-center col-1'>"                                    
-                  if(dataOutput[index][i] != 'SD' && dataOutput[index][i] != 'ERR') {
-                    table = table + `<div class="input-group input-group-sm">
-                                      <input readonly="true" type="text" class="form-control" value='` + dataOutput[index][i] + `'>
-                                      <div class="input-group-append">
-                                        <a class="btn btn-outline-secondary" href="` + item + `" target="_blank" title="Ver Link">
-                                          <i class="fas fa-link"></i>
-                                        </a>
-                                        <a class="btn btn-outline-primary" onclick='getPriceUnique("`+dataOutput[0][i]+`","`+ index +`","`+item+`")' href="javascript:void(0);" title="Obtener precio del item">
-                                          <i class="fas fa-sync"></i>
-                                        </a>                                                                        
-                                      </div>
-                                    </div>`
-                  }
-                  table = table + "</td>"  
-                }              
-              });                       
-              table = table + "</tr>"     
-            }
-          });          
-          table = table + "</tbody></table>"
-
-          document.getElementById("table-link").innerHTML = table
-
-        });    
-      });
-    </script>
 
     <script type="text/javascript" charset="utf-8">      
       async function getInit() {
@@ -144,10 +82,12 @@
 
         url = 'http://localhost:5000'
         try {
-          let res = await fetch(url);
-          console.log(await res.text())          
-
+          let res = await fetch(url);          
+          let text = await res.text()
+          console.log(text)
           hideSpinner()
+
+          return text
         } catch (error) {
           hideSpinner()
           console.log(error);
@@ -260,5 +200,95 @@
         spinner.setAttribute('hidden', '');
       }
     </script>
+
+    <script type="text/javascript" charset="utf-8">      
+      d3.text("result/input.csv", function(data1) {                           
+        var dataInput = d3.dsv(';').parseRows(data1);
+
+        d3.text("result/output.csv", function(data2) {  
+          try {
+            var dataOutput = d3.dsv(';').parseRows(data2);
+          } catch (error) {
+            forceGenerateOutput()            
+          }
+          console.log(dataOutput)
+
+          var table = `<table class='table table-sm'>
+            <thead class='thead-dark' style='position: sticky; top: -1px; z-index: 99;'>
+              <tr>
+                <th cols="9" class="text-center">
+                  <a onclick='resetPrice()' href="javascript:void(0);" title="Reinicar Precios" class="badge badge-danger" style="left: 30px; position: absolute; top: 10px;">
+                    <i class="fas fa-trash-restore"></i>
+                  </a>
+
+                  RECOPILADOR DE PRECIOS
+                  <a onclick='getPriceAll()' href="javascript:void(0);" title="Obtener todos los precios">
+                    <i class="fas fa-sync"></i>
+                  </a>                                         
+
+                  <a data-toggle="modal" data-target="#priceModal" href="javascript:void(0);" title="Cargar Precios" class="badge badge-warning" style="right: 70px; position: absolute; top: 10px;">
+                    <i class="fas fa-upload"></i>
+                  </a>
+
+                  <a onclick='downloadPrice()' href="javascript:void(0);" title="Descargar Precios" class="badge badge-success" style="right: 30px; position: absolute; top: 10px;">
+                    <i class="fas fa-download"></i>
+                  </a>
+                </th>
+              </tr>
+            </thead>
+          `
+
+          dataInput.forEach((element, index) => {                                    
+            if(index == 0) {
+              table = table + "<thead class='thead-light' style='position: sticky; top: 32px; z-index: 99;'><tr class='d-flex'>"                          
+              element.forEach((item, i) => {              
+                if(i == 0) {
+                  // no se hace nada
+                }else if(i == 1) {
+                  table = table + "<th class='col-4'>" + item.toUpperCase() + "</th>"  
+                } else {
+                  table = table + `<th class='text-center col-1' title="`+item.toUpperCase()+`">` 
+                    + item.toUpperCase().substring(0, 10) + ((item.length > 10) ? "...&nbsp;" : "&nbsp;") +
+                    `<a onclick='getPriceColumn("`+dataOutput[0][i]+`")' href="javascript:void(0);" title="Obtener precio de toda la columna">
+                      <i class="fas fa-sync"></i>
+                    </a>                       
+                  </th>`
+                }
+              });                          
+              table = table + "</thead></tr><tbody>"
+            } else {
+              table = table + "<tr class='d-flex'>"
+              element.forEach((item, i) => {
+                if(i == 0) {
+                  // no se hace nada
+                } else if(i == 1) {
+                  table = table + "<td class='text-nowrap col-4' title='"+ element[0] + ' - ' + item +"'><b>" + element[0] + '</b> - ' + item + "</td>"  
+                } else {
+                  table = table + "<td class='text-center col-1'>"                                    
+                  if(dataOutput[index][i] != 'SD' && dataOutput[index][i] != 'ERR') {
+                    table = table + `<div class="input-group input-group-sm">
+                                      <input readonly="true" type="text" class="form-control" value='` + dataOutput[index][i] + `'>
+                                      <div class="input-group-append">
+                                        <a class="btn btn-outline-secondary" href="` + item + `" target="_blank" title="Ver Link">
+                                          <i class="fas fa-link"></i>
+                                        </a>
+                                        <a class="btn btn-outline-primary" onclick='getPriceUnique("`+dataOutput[0][i]+`","`+ index +`","`+item+`")' href="javascript:void(0);" title="Obtener precio del item">
+                                          <i class="fas fa-sync"></i>
+                                        </a>                                                                        
+                                      </div>
+                                    </div>`
+                  }
+                  table = table + "</td>"  
+                }              
+              });                       
+              table = table + "</tr>"     
+            }
+          });         
+          table = table + "</tbody></table>"
+          
+          document.getElementById("table-link").innerHTML = table
+        });    
+      });                 
+    </script>    
   </body>
 </html>

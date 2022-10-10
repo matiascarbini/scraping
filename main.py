@@ -14,7 +14,7 @@ import os
 
 import modules.webdriver.driver as chrome
 
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, redirect
 from flask_cors import CORS
 
 from modules.scan.arcoirisencasa import arcoirisencasa_api
@@ -124,7 +124,10 @@ def createOutput(input):
 
 @app.route('/', methods=["GET"])
 def getInit():  
-  return 'RECOPILADOR PRECIOS'
+  if os.path.exists('result/input.csv') == True:
+    return "SI"
+  else: 
+    return "NO"
 
 @app.route('/force_generate_output', methods=["GET"])
 def forceGenerateOutput():  
@@ -132,6 +135,15 @@ def forceGenerateOutput():
   output = createOutput(input)      
 
   return output.to_json()
+
+@app.route('/upload', methods=["POST"])
+def upload():  
+  uploaded_file = request.files['file']
+  if uploaded_file.filename != '':
+    uploaded_file.filename = 'input.csv'
+    uploaded_file.save('result/' + uploaded_file.filename,)  
+  
+  return redirect("http://localhost:500", code=302)
 
 @app.route('/download_output', methods=["GET"])
 def downloadOutput():  

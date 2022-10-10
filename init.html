@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Configuración - Recopilador de Precios</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+      #spinner:not([hidden]) {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        background: #0000003b;
+      }
+
+      #spinner::after {
+        content: "";
+        width: 150px;
+        height: 150px;
+        border: 9px solid #f3f3f3;
+        border-top: 10px solid #f25a41;
+        border-radius: 100%;
+        will-change: transform;
+        animation: spin 1s infinite linear
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>    
+  </head>
+  <body>    
+    <div hidden id="spinner"></div>
+
+    <a onclick='resetPrice()' href="javascript:void(0);" title="Reinicar Precios" class="btn btn-danger">
+      <i class="fas fa-trash-restore"></i>
+    </a>        
+    <a data-toggle="modal" data-target="#priceModal" href="javascript:void(0);" title="Cargar Precios" class="btn btn-warning">
+      <i class="fas fa-upload"></i>
+    </a>  
+    
+    <!-- Modal -->
+    <div class="modal fade" id="priceModal" tabindex="-1" role="dialog" aria-labelledby="priceModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="priceModallLabel">Cargar Links Precios</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>          
+          <div class="modal-body">                          
+            <form id="load-csv" action="http://localhost:5000/upload" method="POST" enctype="multipart/form-data">
+              <input type="file" name="file" accept=".csv"/>                            
+            </form>
+          </div>
+          <div class="modal-footer">
+            <a href="javascript:void(0);" class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
+            <button onclick="document.getElementById('load-csv').submit();" class="btn btn-primary">Cargar</button>
+          </div>          
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+    
+    <script type="text/javascript" charset="utf-8">      
+      async function forceGenerateOutput() {
+        showSpinner()
+
+        url = 'http://localhost:5000/force_generate_output'
+        try {
+          let res = await fetch(url);
+          console.log(await res.json())          
+
+          hideSpinner()
+          window.location.reload()
+        } catch (error) {
+          hideSpinner()
+          console.log(error);
+        }          
+      }     
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+      function resetPrice() {
+        if( confirm("Reiniciar planilla de precios") == true) {
+          forceGenerateOutput()
+        }
+      }      
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+      const spinner = document.getElementById("spinner");
+
+      function showSpinner() {
+        spinner.removeAttribute('hidden');
+      }
+      function hideSpinner() {
+        spinner.setAttribute('hidden', '');
+      }
+    </script>
+
+  </body>
+</html>
