@@ -222,5 +222,12 @@ def getPrice():
   
   return result.to_json()
 
+@app.route('/all/force_generate_output', methods=["GET"])
+def forceGenerateOutput():  
+  input = csv.importCSV(abspath('result/input.csv'))    
+  output = createOutput(input)      
+
+  return output.to_json()
+
 if __name__ == '__main__':
   app.run(host='0.0.0.0', debug=False, port=5000)

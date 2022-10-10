@@ -4,4 +4,4 @@ Scripts
 pyvenv.cfg
 *.pyc
 result/input.csv
-result/result.csv
+result/output.csv
