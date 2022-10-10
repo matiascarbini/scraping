@@ -51,4 +51,4 @@ def getPriceByURL():
     
     return parse(html)    
   else: 
-    return '-- No se cargo la url << COTODIGITAL3 >> --'
+    return 'SD'

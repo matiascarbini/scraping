@@ -69,4 +69,4 @@ def getPriceByURL():
     
     return parse(html)    
   else: 
-    return '-- No se cargo la url << CARREFOUR >> --'
+    return 'SD'
