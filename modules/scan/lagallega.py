@@ -3,6 +3,9 @@ from selenium import webdriver
 import pandas
 import string
 
+import modules.data.csv as csv
+from os.path import abspath
+
 import modules.webdriver.driver as chrome
 
 from flask import Blueprint, request
@@ -41,14 +44,22 @@ def parse(html: string):
 @lagallega_api.route('/lagallega/get_price', methods=["GET"])
 def getPriceByURL():
   url = request.args.get('url')
-  
+  pos = request.args.get('pos')
+
   if url is not None:
     driver = chrome.init()    
     driver.get("https://www.lagallega.com.ar")
     driver.get(url)    
     html = driver.page_source    
     chrome.quit(driver)
+
+    val = parse(html)    
     
-    return parse(html)    
+    if pos is not None:            
+      output = csv.importCSV(abspath('result/output.csv'))
+      output[int(pos),'lagallega'] = val
+      csv.exportCSV(abspath('result/output.csv'), output)  
+
+    return val
   else: 
     return 'SD'

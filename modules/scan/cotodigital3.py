@@ -3,6 +3,9 @@ from selenium import webdriver
 import pandas
 import string
 
+import modules.data.csv as csv
+from os.path import abspath
+
 import modules.webdriver.driver as chrome
 
 from flask import Blueprint, request
@@ -41,6 +44,7 @@ def parse(html: string):
 @cotodigital3_api.route('/cotodigital3/get_price', methods=["GET"])
 def getPriceByURL():       
   url = request.args.get('url')
+  pos = request.args.get('pos')
   
   if url is not None:
     driver = chrome.init()    
@@ -49,6 +53,13 @@ def getPriceByURL():
     html = driver.page_source    
     chrome.quit(driver)
     
-    return parse(html)    
+    val = parse(html)    
+    
+    if pos is not None:            
+      output = csv.importCSV(abspath('result/output.csv'))
+      output[int(pos),'cotodigital3'] = val
+      csv.exportCSV(abspath('result/output.csv'), output)  
+
+    return val  
   else: 
     return 'SD'
