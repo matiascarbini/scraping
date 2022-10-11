@@ -268,7 +268,7 @@
                   table = table + "<td class='text-nowrap col-4' title='"+ element[0] + ' - ' + item +"'><b>" + element[0] + '</b> - ' + item + "</td>"  
                 } else {
                   table = table + "<td class='text-center col-1'>"                                    
-                  if(dataOutput[index][i] != 'SD' && dataOutput[index][i] != 'ERR') {
+                  if(dataOutput[index][i] != 'SD') {
                     table = table + `<div class="input-group input-group-sm">
                                       <input readonly="true" type="text" class="form-control" value='` + dataOutput[index][i] + `'>
                                       <div class="input-group-append">
