@@ -1,0 +1,1 @@
+"C:\_RobotPrecios/scraping/Scripts/python.exe" main.py
