@@ -47,7 +47,7 @@ def parse(html: string):
       decimal = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyFraction')  
               
       if precio and decimal.text:
-        return precio + '.' + decimal.text
+        return precio + ',' + decimal.text
       else:
         return 'ERR'
     else:

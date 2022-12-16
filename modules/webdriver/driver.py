@@ -7,7 +7,7 @@ def init():
   chrome_options.add_argument('--no-sandbox')
   chrome_options.add_argument('--disable-dev-shm-usage')
 
-  DRIVER_PATH = '/home/matias/DESARROLLO/PYTHON/scraping/modules/webdriver/chromedriver'  
+  DRIVER_PATH = '/home/matias/DESARROLLO/PYTHON/scraping/modules/webdriver/chromedriver108'  
   if os.name == 'nt':
     DRIVER_PATH = 'C:\_RobotPrecios\scraping\modules\webdriver\chromedriver.exe'
 

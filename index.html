@@ -245,7 +245,7 @@
                 if(i == 0) {
                   // no se hace nada
                 }else if(i == 1) {
-                  table = table + "<th class='col-4'>" + item.toUpperCase() + "</th>"  
+                  table = table + "<th class='col-6'>" + item.toUpperCase() + "</th>"  
                 } else {
                   table = table + `<th class='text-center col-1' title="`+item.toUpperCase()+`">` 
                     + item.toUpperCase().substring(0, 10) + ((item.length > 10) ? "...&nbsp;" : "&nbsp;") +
@@ -262,7 +262,7 @@
                 if(i == 0) {
                   // no se hace nada
                 } else if(i == 1) {
-                  table = table + "<td class='text-nowrap col-4' title='"+ element[0] + ' - ' + item +"'><b>" + element[0] + '</b> - ' + item + "</td>"  
+                  table = table + "<td class='text-nowrap col-6' title='"+ element[0] + ' - ' + item +"'><b>" + element[0] + '</b> - ' + item + "</td>"  
                 } else {
                   table = table + "<td class='text-center col-1'>"                                    
                   if(dataOutput[index][i] != 'SD' && dataOutput[index][i] != 'ERR') {
