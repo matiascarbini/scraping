@@ -3,6 +3,9 @@
   <head>
     <title>Recopilador de Precios</title>
 
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta charset=UTF-8>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.2/css/all.min.css" integrity="sha512-3M00D/rn8n+2ZVXBO9Hib0GKNpkm8MSUU/e2VNthDyBYxKWG+BftNYYcuEjXlyrSO637tidzMBXfE7sQm0INUg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -265,7 +268,7 @@
                   table = table + "<td class='text-nowrap col-6' title='"+ element[0] + ' - ' + item +"'><b>" + element[0] + '</b> - ' + item + "</td>"  
                 } else {
                   table = table + "<td class='text-center col-1'>"                                    
-                  if(dataOutput[index][i] != 'SD' && dataOutput[index][i] != 'ERR') {
+                  if(dataOutput[index][i] != 'SD') {
                     table = table + `<div class="input-group input-group-sm">
                                       <input readonly="true" type="text" class="form-control" value='` + dataOutput[index][i] + `'>
                                       <div class="input-group-append">

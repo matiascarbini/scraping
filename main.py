@@ -149,7 +149,7 @@ def upload():
   
   forceGenerateOutput()
   
-  return redirect("http://localhost:5000", code=302)
+  return redirect("http://localhost/scraping", code=302)
 
 @app.route('/download_output', methods=["GET"])
 def downloadOutput():  
