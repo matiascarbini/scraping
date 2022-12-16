@@ -35,23 +35,43 @@ def getPrice(driver: webdriver, url: string):
 def parse(html: string):
   try:
     element = BeautifulSoup(html, 'lxml')  
-    element = element.find('span', 'lyracons-carrefourarg-product-price-1-x-sellingPriceValue') 
+
+    isOferta = element.find('span', 'lyracons-carrefourarg-product-price-1-x-listPrice')    
     
-    if element:
-      arrPrecio = element.find_all('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger')                         
+    if isOferta == None:    
+      element = element.find('span', 'lyracons-carrefourarg-product-price-1-x-sellingPriceValue') 
+    
+      if element:
+        arrPrecio = element.find_all('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger')                         
       
-      precio = ""
-      for p in arrPrecio: 
-        precio = str(precio) + str(p.text)
+        precio = ""
+        for p in arrPrecio: 
+          precio = str(precio) + str(p.text)
         
-      decimal = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyFraction')  
+        decimal = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyFraction')  
               
-      if precio and decimal.text:
-        return precio + ',' + decimal.text
-      else:
-        return 'ERR'
+        if precio and decimal.text:
+          return precio + ',' + decimal.text
+        else:
+          return 'ERR'
     else:
-      return 'ERR'
+      element = element.find('span', 'lyracons-carrefourarg-product-price-1-x-sellingPriceValue') 
+    
+      if element:
+        arrPrecio = element.find_all('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger')                         
+      
+        precio = ""
+        for p in arrPrecio: 
+          precio = str(precio) + str(p.text)
+        
+        decimal = element.find('span', 'lyracons-carrefourarg-product-price-1-x-currencyFraction')  
+              
+        if precio and decimal.text:
+          return '* ' + precio + ',' + decimal.text
+        else:
+          return 'ERR'
+
+    return 'ERR'
   except:
     return 'ERR'
           

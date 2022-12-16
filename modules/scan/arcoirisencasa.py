@@ -33,14 +33,24 @@ def parse(html: string):
   try:
     element = BeautifulSoup(html, 'lxml')
       
-    element = element.find('div', 'DetallPrec')
-    element = element.find('div', 'izq') 
-    precio = element.find('b') 
+    isOferta = element.find('div', 'OferProd')    
     
-    if precio.text:
-      return precio.text.split('$')[1]
+    if isOferta == None:
+      element = element.find('div', 'DetallPrec')
+      element = element.find('div', 'izq') 
+      precio = element.find('b') 
+      
+      if precio.text:
+        return precio.text.split('$')[1]
     else:
-      return 'ERR'
+      element = element.find('div', 'DetallPrec')
+      element = element.find('div', 'izq') 
+      precio = element.find('b') 
+      
+      if precio.text:
+        return '* ' + precio.text.split('$')[1]
+
+    return 'ERR'
   except:
     return 'ERR'
 

@@ -47,8 +47,8 @@ def parse(html: string):
           precio = precio[0:pos1-1] + ',' + decimal               
 
         return precio
-      else:
-        return 'ERR'
+      
+      return 'ERR'
     else:
       element = isOferta
 
@@ -62,9 +62,9 @@ def parse(html: string):
           decimal = precio[pos1:pos1 + 2].strip()
           precio = precio[0:pos1-1] + ',' + decimal                      
 
-        return precio
-      else:
-        return 'ERR'
+        return '* ' + precio
+      
+      return 'ERR'
   except:
     return 'ERR'
   

@@ -30,13 +30,21 @@ def getPrice(driver: webdriver, url: string):
 def parse(html: string):
   try:
     element = BeautifulSoup(html, 'lxml')
-      
-    precio = element.find('p', 'styles__BestPrice-sc-1ovmlws-12') 
+
+    isOferta = element.find('p', 'styles__ListPrice-prs94d-0 hBDooZ styles__ListPrice-sc-1ovmlws-11 bWTvgS')    
     
-    if precio.text:
-      return precio.text.split('$')[1]
+    if isOferta == None:
+      precio = element.find('p', 'styles__BestPrice-sc-1ovmlws-12') 
+    
+      if precio.text: 
+        return precio.text.split('$')[1]
     else:
-      return 'ERR'
+      precio = element.find('p', 'styles__BestPrice-sc-1ovmlws-12') 
+    
+      if precio.text: 
+        return '* ' + precio.text.split('$')[1]
+
+    return 'ERR'
   except:
     return 'ERR'
   
