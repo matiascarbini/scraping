@@ -22,16 +22,28 @@ def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
     
   return arrPrices
 
-def getPrice(driver: webdriver, url: string): 
+def getPrice(driver: webdriver, url: string):     
+  gradual = '0'
+  posGradual = url.find('|http')    
+  if posGradual > 0:
+    gradual = url[0 : posGradual]
+    url = url[posGradual + 1 : len(url)]
+  
   driver.get(url)
   html = driver.page_source  
-  return parse(html)  
+  val = parse(html)
+
+  if float(gradual) > 0:
+    val = float(val.replace(',','.')) * float(gradual)      
+    val = str(val).replace('.',',')        
+
+  return val
   
 def parse(html: string):
   try:
     element = BeautifulSoup(html, 'lxml')
 
-    isOferta = element.find('p', 'styles__ListPrice-prs94d-0 hBDooZ styles__ListPrice-sc-1ovmlws-11 bWTvgS')    
+    isOferta = element.find('p', 'styles__ListPrice-sc-1ovmlws-11')    
     
     if isOferta == None:
       precio = element.find('p', 'styles__BestPrice-sc-1ovmlws-12') 
@@ -53,6 +65,12 @@ def getPriceByURL():
   url = request.args.get('url')
   pos = request.args.get('pos')
 
+  gradual = '0'
+  posGradual = url.find('|http')    
+  if posGradual > 0:
+    gradual = url[0 : posGradual]
+    url = url[posGradual + 1 : len(url)]
+    
   if url is not None:
     driver = chrome.init()    
     driver.get("https://hiperlibertad.com.ar")
@@ -61,6 +79,10 @@ def getPriceByURL():
     chrome.quit(driver)
     
     val = parse(html)    
+
+    if float(gradual) > 0:
+      val = float(val.replace(',','.')) * float(gradual)      
+      val = str(val).replace('.',',')      
     
     if pos is not None:            
       output = csv.importCSV(abspath('result/output.csv'))

@@ -25,9 +25,21 @@ def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):
   return arrPrices
 
 def getPrice(driver: webdriver, url: string):  
+  gradual = '0'
+  posGradual = url.find('|http')    
+  if posGradual > 0:
+    gradual = url[0 : posGradual]
+    url = url[posGradual + 1 : len(url)]
+
   driver.get(url)
   html = driver.page_source  
-  return parse(html)      
+  val = parse(html)
+
+  if float(gradual) > 0:
+    val = float(val.replace(',','.')) * float(gradual)      
+    val = str(val).replace('.',',')        
+
+  return val
   
 def parse(html: string):
   try:
@@ -59,6 +71,12 @@ def getPriceByURL():
   url = request.args.get('url')
   pos = request.args.get('pos')
 
+  gradual = '0'
+  posGradual = url.find('|http')    
+  if posGradual > 0:
+    gradual = url[0 : posGradual]
+    url = url[posGradual + 1 : len(url)]
+
   if url is not None:
     driver = chrome.init()    
     driver.get("https://www.lagallega.com.ar")
@@ -68,6 +86,10 @@ def getPriceByURL():
 
     val = parse(html)    
     
+    if float(gradual) > 0:
+      val = float(val.replace(',','.')) * float(gradual)      
+      val = str(val).replace('.',',')  
+
     if pos is not None:            
       output = csv.importCSV(abspath('result/output.csv'))
       output.at[int(pos),'lagallega'] = val

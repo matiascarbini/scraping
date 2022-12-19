@@ -261,7 +261,15 @@
               table = table + "</thead></tr><tbody>"
             } else {
               table = table + "<tr class='d-flex'>"
-              element.forEach((item, i) => {
+              element.forEach((item, i) => {                
+                if(item.indexOf("|http") > 0) {                  
+                  let initTMP = item.indexOf("|http") + 1
+                  let lenTMP = item.length
+                  urlTMP = item.substring(initTMP, lenTMP)
+                } else {
+                  urlTMP = item
+                }
+
                 if(i == 0) {
                   // no se hace nada
                 } else if(i == 1) {
@@ -272,7 +280,7 @@
                     table = table + `<div class="input-group input-group-sm">
                                       <input readonly="true" type="text" class="form-control" value='` + dataOutput[index][i] + `'>
                                       <div class="input-group-append">
-                                        <a class="btn btn-outline-secondary" href="` + item + `" target="_blank" title="Ver Link">
+                                        <a class="btn btn-outline-secondary" href="` + urlTMP + `" target="_blank" title="Ver Link">
                                           <i class="fas fa-link"></i>
                                         </a>
                                         <a class="btn btn-outline-primary" onclick='getPriceUnique("`+dataOutput[0][i]+`","`+ index +`","`+item+`")' href="javascript:void(0);" title="Obtener precio del item">
