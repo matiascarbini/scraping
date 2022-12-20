@@ -9,7 +9,7 @@ def init():
 
   DRIVER_PATH = '/home/matias/DESARROLLO/PYTHON/scraping/modules/webdriver/chromedriver108'  
   if os.name == 'nt':
-    DRIVER_PATH = 'C:\\xampp\\htdocs\\scraping\\modules\\webdriver\\chromedriver.exe'
+    DRIVER_PATH = 'C:\\xampp\\htdocs\\scraping\\modules\\webdriver\\chromedriver108.exe'
 
   return webdriver.Chrome(DRIVER_PATH, chrome_options=chrome_options)
 
