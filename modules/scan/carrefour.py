@@ -36,6 +36,8 @@ def parse(html: string):
   try:
     element = BeautifulSoup(html, 'lxml')  
 
+    element = element.find('div','vtex-flex-layout-0-x-flexRowContent--product-view-product-main')   
+    element = element.find('div','vtex-flex-layout-0-x-flexCol--product-view-details') 
     isOferta = element.find('span', 'lyracons-carrefourarg-product-price-1-x-listPrice')    
     
     if isOferta == None:    

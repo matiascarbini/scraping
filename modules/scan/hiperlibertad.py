@@ -43,6 +43,7 @@ def parse(html: string):
   try:
     element = BeautifulSoup(html, 'lxml')
 
+    element = element.find('div','styles__Container-sc-1ovmlws-1')
     isOferta = element.find('p', 'styles__ListPrice-sc-1ovmlws-11')    
     
     if isOferta == None:

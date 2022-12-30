@@ -31,6 +31,7 @@ def parse(html: string):
   try:
     element = BeautifulSoup(html, 'lxml')
 
+    element = element.find('div','info_productPrice')
     isOferta = element.find('span', 'price_discount')    
     
     if isOferta == None:
