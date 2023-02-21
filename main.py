@@ -2,13 +2,13 @@ from cmath import nan
 import modules.scan.lagallega as site1
 import modules.scan.lareinaonline as site2
 import modules.scan.carrefour as site3
-'''import modules.scan.unicosupermercados as site4'''
 import modules.scan.arcoirisencasa as site5
 import modules.scan.hiperlibertad as site6
 import modules.scan.cotodigital3 as site7
-'''import modules.scan.jumbo as site8'''
 
-import modules.data.csv as csv
+import modules.data.csvHelper as csv
+import modules.data.sqlite as sqlite
+
 from os.path import abspath
 import os
 
@@ -21,10 +21,8 @@ from modules.scan.arcoirisencasa import arcoirisencasa_api
 from modules.scan.carrefour import carrefour_api
 from modules.scan.cotodigital3 import cotodigital3_api
 from modules.scan.hiperlibertad import hiperlibertad_api
-'''from modules.scan.jumbo import jumbo_api'''
 from modules.scan.lagallega import lagallega_api
 from modules.scan.lareinaonline import lareinaonline_api
-'''from modules.scan.unicosupermercados import unicosupermercados_api'''
 
 app = Flask(__name__)
 CORS(app)
@@ -33,12 +31,13 @@ app.register_blueprint(arcoirisencasa_api)
 app.register_blueprint(carrefour_api)
 app.register_blueprint(cotodigital3_api)
 app.register_blueprint(hiperlibertad_api)
-'''app.register_blueprint(jumbo_api)'''
 app.register_blueprint(lagallega_api)
 app.register_blueprint(lareinaonline_api)
-'''app.register_blueprint(unicosupermercados_api)'''
 
 def createOutput(input):  
+  sqlite.insert_input(input)
+  input = sqlite.select_input()
+  
   output = csv.createDF()
 
   colMicropackId = []
@@ -46,86 +45,67 @@ def createOutput(input):
   colLagallega = []
   colLareinaonline  = []
   colCarrefour  = []
-  '''colUnicosupermercados  = []'''
   colArcoirisencasa  = []
   colHiperlibertad  = []
   colCotodigital3  = []
-  '''colJumbo  = []'''
 
-  for row in input:        
-    for cell in input[row]:  
-      if row == "micropack_id":        
+  for row in input:
+    for indice, cell in enumerate(row):  
+
+      if indice == 0: #micropack_id        
         colMicropackId.append(cell)
 
-      if row == "productos":        
+      if indice == 1: #productos        
         colProductos.append(cell)
 
-      if row == "lagallega":           
+      if indice == 2: #lagallega
         if cell and cell.strip(): 
           colLagallega.append(0)
         else:
           colLagallega.append("SD")
 
-      if row == "lareinaonline":       
+      if indice == 3: #lareinaonline
         if cell and cell.strip(): 
           colLareinaonline.append(0)
         else:
           colLareinaonline.append("SD")
 
-      if row == "carrefour":       
+      if indice == 4: #carrefour
         if cell and cell.strip(): 
           colCarrefour.append(0)
         else:
           colCarrefour.append("SD")
       
-      '''
-      if row == "unicosupermercados":       
-        if cell and cell.strip(): 
-          colUnicosupermercados.append(0)
-        else:
-          colUnicosupermercados.append("SD")
-      '''
-
-      if row == "arcoirisencasa":       
+      if indice == 5: #arcoirisencasa
         if cell and cell.strip(): 
           colArcoirisencasa.append(0)
         else:
           colArcoirisencasa.append("SD")
 
-      if row == "hiperlibertad":       
+      if indice == 6: #hiperlibertad      
         if cell and cell.strip(): 
           colHiperlibertad.append(0)
         else:
           colHiperlibertad.append("SD")
 
-      if row == "cotodigital3":       
+      if indice == 7: #cotodigital3
         if cell and cell.strip(): 
           colCotodigital3.append(0)
         else:
           colCotodigital3.append("SD")
 
-      '''
-      if row == "jumbo":       
-        if cell and cell.strip(): 
-          colJumbo.append(0)
-        else:
-          colJumbo.append("SD")
-      '''
-
   output['micropack_id'] = colMicropackId
   output['productos'] = colProductos
   output['lagallega'] = colLagallega
   output['lareinaonline'] = colLareinaonline
-  output['carrefour'] = colCarrefour
-  '''output['unicosupermercados'] = colUnicosupermercados'''
+  output['carrefour'] = colCarrefour  
   output['arcoirisencasa'] = colArcoirisencasa
   output['hiperlibertad'] = colHiperlibertad
   output['cotodigital3'] = colCotodigital3
-  '''output['jumbo'] = colJumbo'''
   
-  csv.exportCSV(abspath('result/output.csv'), output)  
-  return csv.importCSV(abspath('result/output.csv'))
-
+  sqlite.insert_output(output)
+  return sqlite.select_output()
+  
 @app.route('/', methods=["GET"])
 def getInit():  
   if os.path.exists('result/input.csv') == True:
@@ -138,7 +118,7 @@ def forceGenerateOutput():
   input = csv.importCSV(abspath('result/input.csv'))    
   output = createOutput(input)      
 
-  return output.to_json()
+  return output
 
 @app.route('/upload', methods=["POST"])
 def upload():  
@@ -156,107 +136,50 @@ def downloadOutput():
   path = "result/output.csv"
   return send_file(path, as_attachment=True)
 
+@app.route('/select/input', methods=["GET"])
+def selectInput():
+  return sqlite.select_input()
+
+@app.route('/select/output', methods=["GET"])
+def selectOutput():
+  return sqlite.select_output()
+
 @app.route('/all/get_price', methods=["GET"])
 def getPrice():    
   col = request.args.get('col')
-  top = request.args.get('top')
-
+  
   driver = chrome.init()    
-  input = csv.importCSV(abspath('result/input.csv'))
-    
-  if os.path.exists('result/output.csv') == True:
-    output = csv.importCSV(abspath('result/output.csv'))
-  else:
-    output = createOutput(input)    
-
-  result = csv.createDF()  
-  result['micropack_id'] = output['micropack_id']
-  result['productos'] = output['productos']
-  result['lagallega'] = output['lagallega']
-  result['lareinaonline'] = output['lareinaonline']
-  result['carrefour'] = output['carrefour']
-  '''result['unicosupermercados'] = output['unicosupermercados']'''
-  result['arcoirisencasa'] = output['arcoirisencasa']
-  result['hiperlibertad'] = output['hiperlibertad']
-  result['cotodigital3'] = output['cotodigital3']
-  '''result['jumbo'] = output['jumbo']'''
-  
+  input = sqlite.select_input()
+     
   if col is None:  
-    if top is None:  
-      result['lagallega'] = site1.getPriceLote(driver, input["lagallega"])  
-      result['lareinaonline'] = site2.getPriceLote(driver, input["lareinaonline"])       
-      result['carrefour'] = site3.getPriceLote(driver, input["carrefour"]) 
-      '''result['unicosupermercados'] = site4.getPriceLote(driver, input["unicosupermercados"])'''
-      result['arcoirisencasa'] = site5.getPriceLote(driver, input["arcoirisencasa"]) 
-      result['hiperlibertad'] = site6.getPriceLote(driver, input["hiperlibertad"]) 
-      result['cotodigital3'] = site7.getPriceLote(driver, input["cotodigital3"])
-      '''result['jumbo'] = site8.getPriceLote(driver, input["jumbo"])'''
-    else: 
-      result['lagallega'][0:int(top)] = site1.getPriceLote(driver, input["lagallega"].head(int(top)))
-      result['lareinaonline'][0:int(top)] = site2.getPriceLote(driver, input["lareinaonline"].head(int(top)))
-      result['carrefour'][0:int(top)] = site3.getPriceLote(driver, input["carrefour"].head(int(top)))
-      '''result['unicosupermercados'][0:int(top)] = site4.getPriceLote(driver, input["unicosupermercados"].head(int(top)))'''
-      result['arcoirisencasa'][0:int(top)] = site5.getPriceLote(driver, input["arcoirisencasa"].head(int(top)))
-      result['hiperlibertad'][0:int(top)] = site6.getPriceLote(driver, input["hiperlibertad"].head(int(top)))
-      result['cotodigital3'][0:int(top)] = site7.getPriceLote(driver, input["cotodigital3"].head(int(top)))
-      '''result['jumbo'][0:int(top)] = site8.getPriceLote(driver, input["jumbo"].head(int(top)))'''
+    site1.getPriceLote(driver, input, "lagallega")    
+    site2.getPriceLote(driver, input, "lareinaonline")    
+    site3.getPriceLote(driver, input, "carrefour")           
+    site5.getPriceLote(driver, input, "arcoirisencasa")     
+    site6.getPriceLote(driver, input, "hiperlibertad")     
+    site7.getPriceLote(driver, input, "cotodigital3")          
   else: 
-    if col == 'lagallega':
-      if top is None:  
-        result['lagallega'] = site1.getPriceLote(driver, input["lagallega"])  
-      else:
-        result['lagallega'][0:int(top)] = site1.getPriceLote(driver, input["lagallega"].head(int(top)))
+    if col == 'lagallega':     
+      site1.getPriceLote(driver, input, "lagallega")  
   
-    if col == 'lareinaonline':
-      if top is None:  
-        result['lareinaonline'] = site2.getPriceLote(driver, input["lareinaonline"])        
-      else:
-        result['lareinaonline'][0:int(top)] = site2.getPriceLote(driver, input["lareinaonline"].head(int(top))) 
-
+    if col == 'lareinaonline':      
+      site2.getPriceLote(driver, input, "lareinaonline")              
+      
     if col == 'carrefour':
-      if top is None:  
-        result['carrefour'] = site3.getPriceLote(driver, input["carrefour"]) 
-      else:
-        result['carrefour'][0:int(top)] = site3.getPriceLote(driver, input["carrefour"].head(int(top)))
-    
-    '''
-    if col == 'unicosupermercados':
-      if top is None:  
-        result['unicosupermercados'] = site4.getPriceLote(driver, input["unicosupermercados"]) 
-      else:
-        result['unicosupermercados'][0:int(top)] = site4.getPriceLote(driver, input["unicosupermercados"].head(int(top)))
-    '''
-
-    if col == 'arcoirisencasa':
-      if top is None:  
-        result['arcoirisencasa'] = site5.getPriceLote(driver, input["arcoirisencasa"]) 
-      else:
-        result['arcoirisencasa'][0:int(top)] = site5.getPriceLote(driver, input["arcoirisencasa"].head(int(top)))
+      site3.getPriceLote(driver, input, "carrefour") 
       
-    if col == 'hiperlibertad':
-      if top is None:  
-        result['hiperlibertad'] = site6.getPriceLote(driver, input["hiperlibertad"]) 
-      else:
-        result['hiperlibertad'][0:int(top)] = site6.getPriceLote(driver, input["hiperlibertad"].head(int(top)))
+    if col == 'arcoirisencasa':      
+      site5.getPriceLote(driver, input, "arcoirisencasa")       
       
-    if col == 'cotodigital3':
-      if top is None:  
-        result['cotodigital3'] = site7.getPriceLote(driver, input["cotodigital3"])
-      else:
-        result['cotodigital3'][0:int(top)] = site7.getPriceLote(driver, input["cotodigital3"].head(int(top)))
-    
-    '''
-    if col == 'jumbo':
-      if top is None:  
-        result['jumbo'] = site8.getPriceLote(driver, input["jumbo"])
-      else:
-        result['jumbo'][0:int(top)] = site8.getPriceLote(driver, input["jumbo"].head(int(top)))
-    '''
+    if col == 'hiperlibertad':      
+      site6.getPriceLote(driver, input, "hiperlibertad")       
             
-  csv.exportCSV(abspath('result/output.csv'), result)  
+    if col == 'cotodigital3':
+      site7.getPriceLote(driver, input, "cotodigital3")      
+    
   chrome.quit(driver)
-  
-  return result.to_json()
+
+  return ''             
 
 if __name__ == '__main__':
   app.run(host='0.0.0.0', debug=False, port=5000)

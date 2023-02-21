@@ -3,7 +3,7 @@ from selenium import webdriver
 import pandas
 import string
 
-import modules.data.csv as csv
+import modules.data.sqlite as sqlite
 from os.path import abspath
 
 import modules.webdriver.driver as chrome
@@ -12,15 +12,17 @@ from flask import Blueprint, request
 
 hiperlibertad_api = Blueprint('hiperlibertad_api', __name__)
 
-def getPriceLote(driver: webdriver, arrInput: pandas.DataFrame):      
-  arrPrices = []
-  for url in arrInput: 
+def getPriceLote(driver: webdriver, arrInput, column):    
+  val = None
+  for indice, row in enumerate(arrInput): 
+    url = row[6]
     if url:
-      arrPrices.append(getPrice(driver, url))
+      val = getPrice(driver, url)
     else:
-      arrPrices.append('SD')
+      val = 'SD'
     
-  return arrPrices
+    sqlite.insert_output_price(int(indice) + 1, column, val)      
+    val = None
 
 def getPrice(driver: webdriver, url: string):     
   gradual = '0'
@@ -33,10 +35,11 @@ def getPrice(driver: webdriver, url: string):
   html = driver.page_source  
   val = parse(html)
 
-  if float(gradual) > 0:
+  if val != 'ERR' and float(gradual) > 0:
     val = float(val.replace(',','.')) * float(gradual)      
     val = str(val).replace('.',',')        
 
+  val = val.replace('.','')    
   return val
   
 def parse(html: string):
@@ -81,15 +84,13 @@ def getPriceByURL():
     
     val = parse(html)    
 
-    if float(gradual) > 0:
+    if val != 'ERR' and float(gradual) > 0:
       val = float(val.replace(',','.')) * float(gradual)      
       val = str(val).replace('.',',')      
     
-    if pos is not None:            
-      output = csv.importCSV(abspath('result/output.csv'))
-      output.at[int(pos),'hiperlibertad'] = val
-      csv.exportCSV(abspath('result/output.csv'), output)  
-
+    val = val.replace('.','')    
+    sqlite.insert_output_price(int(pos) + 1,'hiperlibertad', val)
     return val   
   else: 
+    sqlite.insert_output_price(int(pos) + 1,'hiperlibertad', 'SD')            
     return 'SD'
