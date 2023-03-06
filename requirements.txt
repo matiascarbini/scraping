@@ -4,5 +4,3 @@ lxml
 pandas
 flask
 flask-cors
-sqlite3
-csv
