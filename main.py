@@ -1,4 +1,3 @@
-from cmath import nan
 import modules.scan.lagallega as site1
 import modules.scan.lareinaonline as site2
 import modules.scan.carrefour as site3
@@ -16,6 +15,10 @@ import modules.webdriver.driver as chrome
 
 from flask import Flask, request, send_file, redirect
 from flask_cors import CORS
+
+import multiprocessing
+import http.server
+import socketserver
 
 from modules.scan.arcoirisencasa import arcoirisencasa_api
 from modules.scan.carrefour import carrefour_api
@@ -129,7 +132,7 @@ def upload():
   
   forceGenerateOutput()
   
-  return redirect("http://localhost/scraping", code=302)
+  return redirect("http://localhost:3000/index.html", code=302)
 
 @app.route('/download_output', methods=["GET"])
 def downloadOutput():  
@@ -181,5 +184,21 @@ def getPrice():
 
   return ''             
 
-if __name__ == '__main__':
+def start_flask_app():
   app.run(host='0.0.0.0', debug=False, port=5000)
+
+def start_html_server():
+    PORT = 3000
+    Handler = http.server.SimpleHTTPRequestHandler
+
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        print("Servidor en el puerto", PORT)
+        httpd.serve_forever()
+
+if __name__ == '__main__':
+  p1 = multiprocessing.Process(target=start_flask_app)
+  p2 = multiprocessing.Process(target=start_html_server)
+  p1.start()
+  p2.start()
+  p1.join()
+  p2.join()
