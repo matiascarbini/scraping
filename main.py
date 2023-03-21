@@ -16,10 +16,6 @@ import modules.webdriver.driver as chrome
 from flask import Flask, request, send_file, redirect
 from flask_cors import CORS
 
-import multiprocessing
-import http.server
-import socketserver
-
 from modules.scan.arcoirisencasa import arcoirisencasa_api
 from modules.scan.carrefour import carrefour_api
 from modules.scan.cotodigital3 import cotodigital3_api
@@ -184,21 +180,5 @@ def getPrice():
 
   return ''             
 
-def start_flask_app():
-  app.run(host='0.0.0.0', debug=False, port=5000)
-
-def start_html_server():
-    PORT = 3000
-    Handler = http.server.SimpleHTTPRequestHandler
-
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        print("Servidor en el puerto", PORT)
-        httpd.serve_forever()
-
 if __name__ == '__main__':
-  p1 = multiprocessing.Process(target=start_flask_app)
-  p2 = multiprocessing.Process(target=start_html_server)
-  p1.start()
-  p2.start()
-  p1.join()
-  p2.join()
+  app.run(host='0.0.0.0', debug=True, port=5000)

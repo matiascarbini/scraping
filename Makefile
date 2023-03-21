@@ -1,16 +1,25 @@
-include .env
+# -------------
+# BUILD
+# -------------
+build-back:
+		docker build -t precios_back -f ./docker/python/Dockerfile .		
 
-build:
-		docker build -t micropack-precios .
+build-front:
+		docker build -t precios_front -f ./docker/nginx/Dockerfile .
 
-run:
-		docker run --name scraping -p 3000:3000 -p 5000:5000 -v $(PATH_APP):/app micropack-precios python /app/main.py
+# -------------
+# UP
+# -------------
+up:
+	docker-compose -f docker-compose.yml up -d
 
-run-production:
-		docker run -d --restart always --name micropack-precios -p 3000:3000 -p 5000:5000 micropack-precios python /app/main.py
+# -------------
+# DOWN
+# -------------
+down:
+	docker-compose -f docker-compose.yml down
 
-stop:
-		docker stop micropack-precios
-
-clean:
-		docker rm micropack-precios
+# -------------
+# DEPLOY
+# -------------
+deploy: build-back build-front up

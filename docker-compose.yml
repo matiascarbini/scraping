@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  precios_back:    
+    image: precios_back:latest
+    container_name: precios_back
+    restart: always
+    ports:
+      - 5000:5000      
+    volumes:
+      - ./:/app
+    networks:
+      - net_precios
+
+  precios_front:
+    image: precios_front:latest
+    container_name: precios_front
+    restart: always
+    ports:
+      - "3000:80"  
+    volumes:
+      - ./:/usr/share/nginx/html    
+    networks:
+      - net_precios      
+    depends_on:
+      - precios_back  
+
+networks:
+  net_precios:
+    driver: bridge

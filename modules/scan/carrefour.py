@@ -41,17 +41,27 @@ def getPrice(driver: webdriver, url: string):
   val = parse(html)
 
   if val != 'ERR' and float(gradual) > 0:
+    isOferta = False
+    if '*' in val:
+      val = val[1:]
+      isOferta = True
+
     val = float(val.replace(',','.')) * float(gradual)      
+    val = round(val,2)  
     val = str(val).replace('.',',')        
+
+    if isOferta:
+      val = '* ' + val
 
   val = val.replace('.','')    
   return val
 
 def parse(html: string):
-  try:
+  try:    
     element = BeautifulSoup(html, 'lxml')  
 
-    element = element.find('div','vtex-flex-layout-0-x-flexRowContent--product-view-product-main')   
+    element = element.find('body')
+    element = element.find('div','vtex-flex-layout-0-x-flexRowContent--product-view-product-main')       
     element = element.find('div','vtex-flex-layout-0-x-flexCol--product-view-details') 
     isOferta = element.find('span', 'lyracons-carrefourarg-product-price-1-x-listPrice')    
     
@@ -73,10 +83,9 @@ def parse(html: string):
           return 'ERR'
     else:
       element = element.find('span', 'lyracons-carrefourarg-product-price-1-x-sellingPriceValue') 
-    
+                  
       if element:
-        arrPrecio = element.find_all('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger')                         
-      
+        arrPrecio = element.find_all('span', 'lyracons-carrefourarg-product-price-1-x-currencyInteger')                                       
         precio = ""
         for p in arrPrecio: 
           precio = str(precio) + str(p.text)
@@ -106,15 +115,24 @@ def getPriceByURL():
   if url is not None:
     driver = chrome.init()    
     driver.get("https://www.carrefour.com.ar")
-    driver.get(url)    
+    driver.get(url)        
     html = driver.page_source    
     chrome.quit(driver)
     
     val = parse(html)    
-        
-    if float(gradual) > 0:
-      val = float(val.replace(',','.')) * float(gradual)      
+    
+    if val != 'ERR' and float(gradual) > 0:
+      isOferta = False
+      if '*' in val:
+        val = val[1:]
+        isOferta = True
+
+      val = float(val.replace(',','.')) * float(gradual)    
+      val = round(val,2)  
       val = str(val).replace('.',',')  
+
+      if isOferta:
+        val = '* ' + val
     
     val = val.replace('.','')    
     sqlite.insert_output_price(int(pos) + 1,'carrefour', val)            

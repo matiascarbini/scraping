@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import pandas
 import string
+import time
 
 import modules.data.sqlite as sqlite
 from os.path import abspath
@@ -38,8 +39,17 @@ def getPrice(driver: webdriver, url: string):
   val = parse(html)
 
   if val != 'ERR' and float(gradual) > 0:
-    val = float(val.replace(',','.')) * float(gradual)      
+    isOferta = False
+    if '*' in val:
+      val = val[1:]
+      isOferta = True
+
+    val = float(val.replace(',','.')) * float(gradual)     
+    val = round(val,2) 
     val = str(val).replace('.',',')        
+
+    if isOferta:
+      val = '* ' + val
 
   val = val.replace('.','')    
   return val 
@@ -84,15 +94,25 @@ def getPriceByURL():
     driver = chrome.init()    
     driver.get("https://arcoirisencasa.com.ar")
     driver.get(url)    
+    time.sleep(1)
     html = driver.page_source    
     chrome.quit(driver)
     
     val = parse(html)    
     
-    if float(gradual) > 0:
-      val = float(val.replace(',','.')) * float(gradual)      
+    if val != 'ERR' and float(gradual) > 0:
+      isOferta = False
+      if '*' in val:
+        val = val[1:]
+        isOferta = True
+              
+      val = float(val.replace(',','.')) * float(gradual)    
+      val = round(val,2)  
       val = str(val).replace('.',',')  
     
+      if isOferta:
+        val = '* ' + val
+
     val = val.replace('.','')    
     sqlite.insert_output_price(int(pos) + 1,'arcoirisencasa', val)      
     return val 
