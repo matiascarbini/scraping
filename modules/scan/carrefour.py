@@ -5,6 +5,7 @@ import pandas
 import string
 import time 
 import sys
+import os
 
 import modules.data.sqlite as sqlite
 from os.path import abspath
@@ -63,7 +64,10 @@ def parse(html: string):
     element = element.find('body')
     element = element.find('div','vtex-flex-layout-0-x-flexRowContent--product-view-product-main')       
     element = element.find('div','vtex-flex-layout-0-x-flexCol--product-view-details') 
-    isOferta = element.find('span', 'lyracons-carrefourarg-product-price-1-x-listPrice')    
+    isOferta = element.find('span','lyracons-carrefourarg-product-price-1-x-listPrice')
+    
+    if isOferta == None:    
+      isOferta = element.find('span','lyracons-carrefourarg-product-price-1-x-discountPercentage')
     
     if isOferta == None:    
       element = element.find('span', 'lyracons-carrefourarg-product-price-1-x-sellingPriceValue') 
@@ -114,9 +118,11 @@ def getPriceByURL():
 
   if url is not None:
     driver = chrome.init()    
-    driver.get("https://www.carrefour.com.ar")
-    driver.get(url)        
-    html = driver.page_source    
+    driver.get("https://www.carrefour.com.ar")    
+    driver.get(url)                   
+    driver.get(url)               
+    driver.get(url)               
+    html = driver.page_source            
     chrome.quit(driver)
     
     val = parse(html)    
