@@ -62,6 +62,7 @@
           </div>          
           <div class="modal-body">                          
             <form id="load-csv" action="" method="POST" enctype="multipart/form-data">
+              <input id="load-csv-host" type="hidden" name="host" />
               <input type="file" name="file" accept=".csv"/>                            
             </form>
           </div>
@@ -79,9 +80,10 @@
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     
-    <script type="text/javascript" charset="utf-8">      
-      const HOST = "http://localhost:5000"
+    <script src="host.js"></script>
+    <script type="text/javascript" charset="utf-8">            
       document.getElementById("load-csv").action = HOST +"/upload";
+      document.getElementById("load-csv-host").value = HOST;
     </script>
 
     <script type="text/javascript" charset="utf-8">      

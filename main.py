@@ -128,7 +128,7 @@ def upload():
   
   forceGenerateOutput()
   
-  return redirect("http://localhost:3000/index.html", code=302)
+  return redirect(request.host + "/index.html", code=302)
 
 @app.route('/download_output', methods=["GET"])
 def downloadOutput():  
