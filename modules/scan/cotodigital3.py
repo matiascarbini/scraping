@@ -9,6 +9,7 @@ from os.path import abspath
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 import modules.webdriver.driver as chrome
 
@@ -37,11 +38,14 @@ def getPrice(driver: webdriver, url: string):
 
   driver.get(url)
 
-  WebDriverWait(driver, 10).until(
-    EC.presence_of_all_elements_located(
-      (By.CSS_SELECTOR, ".atg_store_newPrice"),        
-    )      
-  )           
+  try:
+    WebDriverWait(driver, 10).until(
+      EC.presence_of_all_elements_located(
+        (By.CSS_SELECTOR, ".atg_store_newPrice"),        
+      )      
+    )           
+  except TimeoutException:
+    print("El selector (precio) no se encontró después de esperar 10 segundos.")       
 
   html = driver.page_source  
   val = parse(html)
@@ -119,11 +123,14 @@ def getPriceByURL():
     driver = chrome.init()         
     driver.get(url)    
     
-    WebDriverWait(driver, 10).until(
-      EC.presence_of_all_elements_located(
-        (By.CSS_SELECTOR, ".atg_store_newPrice"),        
-      )      
-    )           
+    try:
+      WebDriverWait(driver, 10).until(
+        EC.presence_of_all_elements_located(
+          (By.CSS_SELECTOR, ".atg_store_newPrice"),        
+        )      
+      )           
+    except TimeoutException:
+      print("El selector (precio) no se encontró después de esperar 10 segundos.")       
 
     html = driver.page_source    
     chrome.quit(driver)
