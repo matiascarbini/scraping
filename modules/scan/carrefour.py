@@ -7,6 +7,10 @@ import time
 import sys
 import os
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 import modules.data.sqlite as sqlite
 from os.path import abspath
 
@@ -16,9 +20,7 @@ from flask import Blueprint, request
 
 carrefour_api = Blueprint('carrefour_api', __name__)
 
-def getPriceLote(driver: webdriver, arrInput, column):    
-  driver.get("https://www.carrefour.com.ar")
-
+def getPriceLote(driver: webdriver, arrInput, column):      
   val = None
   for indice, row in enumerate(arrInput): 
     url = row[4]
@@ -38,6 +40,14 @@ def getPrice(driver: webdriver, url: string):
     url = url[posGradual + 1 : len(url)]
 
   driver.get(url)
+
+  WebDriverWait(driver, 10).until(
+    EC.presence_of_all_elements_located(
+      (By.CSS_SELECTOR, ".lyracons-incompatible-cart-0-x-buttonContentText"),
+      (By.CSS_SELECTOR, ".lyracons-carrefourarg-product-price-1-x-discountPercentage")
+    )      
+  )
+
   html = driver.page_source      
   val = parse(html)
 
@@ -117,11 +127,16 @@ def getPriceByURL():
     url = url[posGradual + 1 : len(url)]  
 
   if url is not None:
-    driver = chrome.init()    
-    driver.get("https://www.carrefour.com.ar")    
-    driver.get(url)                   
+    driver = chrome.init()        
     driver.get(url)               
-    driver.get(url)               
+
+    WebDriverWait(driver, 10).until(
+      EC.presence_of_all_elements_located(
+        (By.CSS_SELECTOR, ".lyracons-incompatible-cart-0-x-buttonContentText"),
+        (By.CSS_SELECTOR, ".lyracons-carrefourarg-product-price-1-x-discountPercentage")
+      )      
+    )       
+
     html = driver.page_source            
     chrome.quit(driver)
     

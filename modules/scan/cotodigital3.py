@@ -6,6 +6,10 @@ import time
 import modules.data.sqlite as sqlite
 from os.path import abspath
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 import modules.webdriver.driver as chrome
 
 from flask import Blueprint, request
@@ -32,6 +36,13 @@ def getPrice(driver: webdriver, url: string):
     url = url[posGradual + 1 : len(url)]
 
   driver.get(url)
+
+  WebDriverWait(driver, 10).until(
+    EC.presence_of_all_elements_located(
+      (By.CSS_SELECTOR, ".atg_store_newPrice"),        
+    )      
+  )           
+
   html = driver.page_source  
   val = parse(html)
 
@@ -105,10 +116,15 @@ def getPriceByURL():
     url = url[posGradual + 1 : len(url)]
   
   if url is not None:
-    driver = chrome.init()    
-    driver.get("https://cotodigital3.com.ar")
+    driver = chrome.init()         
     driver.get(url)    
-    time.sleep(1)
+    
+    WebDriverWait(driver, 10).until(
+      EC.presence_of_all_elements_located(
+        (By.CSS_SELECTOR, ".atg_store_newPrice"),        
+      )      
+    )           
+
     html = driver.page_source    
     chrome.quit(driver)
     
