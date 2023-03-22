@@ -42,11 +42,11 @@ def getPrice(driver: webdriver, url: string):
   driver.get(url)
 
   WebDriverWait(driver, 10).until(
-    EC.presence_of_all_elements_located(
-      (By.CSS_SELECTOR, ".lyracons-incompatible-cart-0-x-buttonContentText"),
-      (By.CSS_SELECTOR, ".lyracons-carrefourarg-product-price-1-x-discountPercentage")
-    )      
-  )
+    EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".lyracons-incompatible-cart-0-x-buttonContentText"))      
+  )       
+  WebDriverWait(driver, 10).until(
+    EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".lyracons-carrefourarg-product-price-1-x-discountPercentage"))
+  ) 
 
   html = driver.page_source      
   val = parse(html)
@@ -131,11 +131,11 @@ def getPriceByURL():
     driver.get(url)               
 
     WebDriverWait(driver, 10).until(
-      EC.presence_of_all_elements_located(
-        (By.CSS_SELECTOR, ".lyracons-incompatible-cart-0-x-buttonContentText"),
-        (By.CSS_SELECTOR, ".lyracons-carrefourarg-product-price-1-x-discountPercentage")
-      )      
+      EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".lyracons-incompatible-cart-0-x-buttonContentText"))      
     )       
+    WebDriverWait(driver, 10).until(
+      EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".lyracons-carrefourarg-product-price-1-x-discountPercentage"))
+    ) 
 
     html = driver.page_source            
     chrome.quit(driver)
