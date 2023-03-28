@@ -69,7 +69,7 @@ def parse(html: string):
 
     else:
       element = element.find('div', 'DetallPrec')
-      element = element.find('div', 'der') 
+      element = element.find('div', 'izq') 
       precio = element.find('b')       
     
       if precio.text:
