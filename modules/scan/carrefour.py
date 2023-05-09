@@ -58,6 +58,8 @@ def getPrice(driver: webdriver, url: string):
 
   html = driver.page_source      
   val = parse(html)
+  if val == 'ERR':
+    val = parse2(html)
 
   if val != 'ERR' and float(gradual) > 0:
     isOferta = False
@@ -123,6 +125,54 @@ def parse(html: string):
   except:
     return 'ERR'
           
+def parse2(html: string):
+  try:    
+    element = BeautifulSoup(html, 'lxml')  
+
+    element = element.find('body')
+    element = element.find('div','vtex-flex-layout-0-x-flexRowContent--product-view-product-main')       
+    element = element.find('div','vtex-flex-layout-0-x-flexCol--product-view-details') 
+    isOferta = element.find('span','valtech-carrefourar-product-price-0-x-listPrice')
+    
+    if isOferta == None:    
+      isOferta = element.find('span','valtech-carrefourar-product-price-0-x-discountPercentage')
+    
+    if isOferta == None:    
+      element = element.find('span', 'valtech-carrefourar-product-price-0-x-sellingPriceValue') 
+    
+      if element:
+        arrPrecio = element.find_all('span', 'valtech-carrefourar-product-price-0-x-currencyInteger')                         
+      
+        precio = ""
+        for p in arrPrecio: 
+          precio = str(precio) + str(p.text)
+        
+        decimal = element.find('span', 'valtech-carrefourar-product-price-0-x-currencyFraction')  
+              
+        if precio and decimal.text:
+          return precio + ',' + decimal.text
+        else:
+          return 'ERR'
+    else:
+      element = element.find('span', 'valtech-carrefourar-product-price-0-x-sellingPriceValue') 
+                  
+      if element:
+        arrPrecio = element.find_all('span', 'valtech-carrefourar-product-price-0-x-currencyInteger')                                       
+        precio = ""
+        for p in arrPrecio: 
+          precio = str(precio) + str(p.text)
+        
+        decimal = element.find('span', 'valtech-carrefourar-product-price-0-x-currencyFraction')  
+              
+        if precio and decimal.text:
+          return '* ' + precio + ',' + decimal.text
+        else:
+          return 'ERR'
+
+    return 'ERR'
+  except:
+    return 'ERR'
+  
 @carrefour_api.route('/carrefour/get_price', methods=["GET"])
 def getPriceByURL():   
   url = request.args.get('url')
@@ -156,7 +206,9 @@ def getPriceByURL():
     chrome.quit(driver)
     
     val = parse(html)    
-    
+    if val == 'ERR':
+      val = parse2(html)
+
     if val != 'ERR' and float(gradual) > 0:
       isOferta = False
       if '*' in val:
