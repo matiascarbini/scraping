@@ -44,17 +44,17 @@ def getPrice(driver: webdriver, url: string):
 
   try:
     WebDriverWait(driver, 10).until(
-      EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".lyracons-incompatible-cart-0-x-buttonContentText"))      
+      EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".valtech-carrefourar-incompatible-cart-0-x-buttonContentText"))      
     )       
   except TimeoutException:
     print("El selector (precio) no se encontró después de esperar 10 segundos.")      
   
   try:
     WebDriverWait(driver, 10).until(
-      EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".lyracons-carrefourarg-product-price-1-x-discountPercentage"))
+      EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".valtech-carrefourar-product-price-0-x-discountPercentage"))
     ) 
   except TimeoutException:
-    print("El selector (descuento) no se encontró después de esperar 10 segundos.")      
+    print("El selector (descuento) no se encontró después de esperar 10 segundos.")   
 
   html = driver.page_source      
   val = parse(html)
@@ -77,7 +77,7 @@ def getPrice(driver: webdriver, url: string):
   val = val.replace('.','')    
   return val
 
-def parse(html: string):
+def parse2(html: string):
   try:    
     element = BeautifulSoup(html, 'lxml')  
 
@@ -125,7 +125,7 @@ def parse(html: string):
   except:
     return 'ERR'
           
-def parse2(html: string):
+def parse(html: string):
   try:    
     element = BeautifulSoup(html, 'lxml')  
 
@@ -190,17 +190,17 @@ def getPriceByURL():
 
     try:
       WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".lyracons-incompatible-cart-0-x-buttonContentText"))      
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".valtech-carrefourar-incompatible-cart-0-x-buttonContentText"))      
       )       
     except TimeoutException:
       print("El selector (precio) no se encontró después de esperar 10 segundos.")      
     
     try:
       WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".lyracons-carrefourarg-product-price-1-x-discountPercentage"))
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".valtech-carrefourar-product-price-0-x-discountPercentage"))
       ) 
     except TimeoutException:
-      print("El selector (descuento) no se encontró después de esperar 10 segundos.")      
+      print("El selector (descuento) no se encontró después de esperar 10 segundos.")     
 
     html = driver.page_source            
     chrome.quit(driver)
