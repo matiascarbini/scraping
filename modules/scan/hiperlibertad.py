@@ -56,16 +56,16 @@ def parse(html: string):
   try:
     element = BeautifulSoup(html, 'lxml')
 
-    element = element.find('div','styles__Container-sc-1ovmlws-1')
-    isOferta = element.find('p', 'styles__ListPrice-sc-1ovmlws-11')    
+    isOferta = element.find('span', 'vtex-product-price-1-x-listPrice--pdp-list-price')
+    objElement = element.find('span','vtex-product-price-1-x-currencyContainer--pdp-selling-price')
     
     if isOferta == None:
-      precio = element.find('p', 'styles__BestPrice-sc-1ovmlws-12') 
+      precio = objElement
     
       if precio.text: 
         return precio.text.split('$')[1]
     else:
-      precio = element.find('p', 'styles__BestPrice-sc-1ovmlws-12') 
+      precio = objElement
     
       if precio.text: 
         return '* ' + precio.text.split('$')[1]
