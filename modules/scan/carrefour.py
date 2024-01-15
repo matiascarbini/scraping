@@ -67,7 +67,7 @@ def getPrice(driver: webdriver, url: string):
       val = val[1:]
       isOferta = True
 
-    val = float(val.replace(',','.')) * float(gradual)      
+    val = float(val.replace('.','').replace(',','.')) * float(gradual)        
     val = round(val,2)  
     val = str(val).replace('.',',')        
 
@@ -215,7 +215,7 @@ def getPriceByURL():
         val = val[1:]
         isOferta = True
 
-      val = float(val.replace(',','.')) * float(gradual)    
+      val = float(val.replace('.','').replace(',','.')) * float(gradual)     
       val = round(val,2)  
       val = str(val).replace('.',',')  
 
